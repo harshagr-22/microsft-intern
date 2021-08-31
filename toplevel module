@@ -1,0 +1,38 @@
+module uart
+#( // Default s e t t i n g :
+// 1 9 , 2 0 0 b a u d , 8 d a t a b i t s , I s t o p b i t , 2'2 FIFO
+parameter DBIT = 8 , // # d a t a b i t s
+SB-TICK = 1 6 , // # t i c k s f o r s t o p b i t s ,
+// 1 6 / 2 4 / 3 2 f o r 1/1.5/2 b i t s
+DVSR = 163, // baud r a t e d i v i s o r
+// DVSR = 50M/(16* baud r a t e )
+DVSR-BIT = 8, // # b i t s o f DVSR
+IU FIFO-W = 2 // # addr b i t s o f FIFO
+// # words i n FIFO=2"FIFO-W
+1
+(
+i n p u t w i r e clk, reset ,
+I S i n p u t w i r e rd-uart , wr-uart , rx,
+i n p u t w i r e [7:0] w-data,
+output wire tx-full, rx-empty, tx,
+output w i r e [7:01 r-data
+1;
+20
+// s i g n a l d e c l a r a t i o n
+w i r e tick, rx-done-tick , tx-done-tick;
+w i r e tx-empty, tx-fifo-not-empty;
+wire [ 7 : 01 tx-f if o-out , rx-data-out ;
+25
+//body
+mod-m-counter #(.M(DVSR), .N(DVSR-BIT)) baud-gen-unit
+(. clk(c1k) , .reset (reset), .qO , .max-tick(tick)) ;
+uart-rx # ( . DBIT(DB1T) , . SB-TICK (SB-TICK)) uart-rx-unit
+( . clk(clk), .reset (reset), .rx(rx), . s-tick(tick),
+.rx-done-tick(rx-done-tick), .dout(rx-data-out));
+fifo #(.B(DBIT), .W(FIFO-W)) fifo-tx-unit
+(.clk(clk), .reset(reset), .rd(tx-done-tick),
+.wr(wr-uart), .w-data(w-data), .empty(tx-empty),
+.full(tx-full), .r-data(tx-fifo-out));
+a s s i g n tx-f if o-not-empty = -tx-empty;
+U
+endmodule
